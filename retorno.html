@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retorno do login · Publicador</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main>
+<h1>Login recebido</h1>
+<p id="msg">Lendo a resposta…</p>
+<p>Se o Publicador não fechar esta etapa sozinho, copie o código abaixo e cole no terminal.</p>
+<pre id="codigo"></pre>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var codigo = q.get("code"), estado = q.get("state"), erro = q.get("error");
+  var msg = document.getElementById("msg"), pre = document.getElementById("codigo");
+  if (erro) { msg.textContent = "A plataforma recusou: " + (q.get("error_description") || erro); return; }
+  if (!codigo) { msg.textContent = "Nenhum código veio na resposta."; return; }
+  pre.textContent = codigo + (estado ? "\n" + estado : "");
+  msg.textContent = "Tudo certo. Entregando ao Publicador no seu computador…";
+  // o Publicador abre um servidor local durante o login; a porta vem no state (ex.: 54321.abc)
+  var porta = estado && estado.split(".")[0];
+  if (porta && /^\d+$/.test(porta)) {
+    var img = new Image();
+    img.onload = function () { msg.textContent = "Pronto: pode fechar esta aba e voltar ao terminal."; };
+    img.onerror = function () { msg.textContent = "Não achei o Publicador nesta máquina: copie o código abaixo."; };
+    img.src = "http://127.0.0.1:" + porta + "/?code=" + encodeURIComponent(codigo) + "&state=" + encodeURIComponent(estado);
+  }
+})();
+</script>
+</main>
+</body>
+</html>
