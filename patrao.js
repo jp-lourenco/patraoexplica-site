@@ -134,17 +134,46 @@
   }
 
   if (TOQUE) {
-    const base = document.querySelector(".base"), lugarOriginal = balao.parentNode, form = document.getElementById("lista");
-    const campos = document.querySelectorAll(".base input, .base button");
-    campos.forEach((el) => {
-      el.addEventListener("focus", () => {
-        if (!digitando) { digitando = true; base.insertBefore(balao, form); balao.classList.add("no-campo"); }
-      });
-      el.addEventListener("blur", () => setTimeout(() => {
-        if (document.activeElement && base.contains(document.activeElement) && document.activeElement.matches("input, button")) return;
-        digitando = false; lugarOriginal.insertBefore(balao, lugarOriginal.firstChild); balao.classList.remove("no-campo");
-      }, 150));
+    // Teclado aberto: a tela vira só o Patrão, o balão e o campo (body.digitando), encaixados na área visível
+    // acima do teclado (visualViewport: no iPhone a página não encolhe, ela rola por baixo do teclado).
+    const base = document.querySelector(".base"), raiz = document.documentElement;
+    const vv = window.visualViewport;
+    function medir() {
+      raiz.style.setProperty("--vh", `${vv ? vv.height : innerHeight}px`);
+      raiz.style.setProperty("--vt", `${vv ? vv.offsetTop : 0}px`);
+    }
+    if (vv) { vv.addEventListener("resize", medir); vv.addEventListener("scroll", medir); }
+    medir();
+    base.addEventListener("focusin", () => {
+      if (digitando) return;
+      digitando = true; document.body.classList.add("digitando"); medir();
+      olharPara(innerWidth / 2, innerHeight);           // olha pro campo
     });
+    base.addEventListener("focusout", () => setTimeout(() => {
+      if (base.contains(document.activeElement)) return;
+      digitando = false; document.body.classList.remove("digitando"); medir();
+    }, 200));
+
+    // reage ao que a pessoa digita (uma vez por "marco", sem metralhar)
+    const email = document.querySelector('input[name="email"]'), ditos = new Set();
+    const MARCOS = [
+      [(v) => v.length >= 3 && !v.includes("@"), "comecou", ["Tá digitando mesmo. Coragem.", "Vai, termina logo isso."]],
+      [(v) => v.includes("@"), "arroba", ["Arroba. Agora ficou sério.", "Botou o arroba. Não tem mais volta."]],
+      [(v) => /@gmail\./i.test(v), "gmail", ["Gmail. Original, hein.", "Gmail. Igual todo mundo."]],
+      [(v) => /@(hotmail|outlook|live)\./i.test(v), "hotmail", ["Hotmail?! Em 2026? Respeito.", "Hotmail. Tu é das antigas."]],
+      [(v) => /@(yahoo|bol|uol|terra)\./i.test(v), "antigo", ["Isso ainda existe? Que medo de ti."]],
+      [(v) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v), "valido", ["Esse e-mail aí funciona. Infelizmente.", "Tá certinho. Agora é só condenar mais um."]],
+    ];
+    let ultimoTexto = "";
+    email.addEventListener("input", () => {
+      const v = email.value.trim();
+      if (v.length < ultimoTexto.length && v.length === 0) falar("apagou", true);
+      ultimoTexto = v;
+      for (const [teste, nome, falas] of MARCOS) {
+        if (!ditos.has(nome) && teste(v)) { ditos.add(nome); FALAS["_" + nome] = falas; falar("_" + nome, true); break; }
+      }
+    });
+    FALAS.apagou = ["Apagou? Isso, desiste. Sábia decisão.", "Arrependeu? Eu entendo."];
     setTimeout(() => { falar("chegou", true); roteiro = setTimeout(proximaDoRoteiro, 6000); }, 600);
   } else {
     // olhadas sozinho de vez em quando (quem não mexe o mouse)

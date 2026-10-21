@@ -72,10 +72,8 @@ a { color: var(--tinta); }
   /* celular (21/10): o Patrão cabe entre o nome e a frase; o balão fica fixo embaixo do nome, sempre visível */
   .patrao { top: max(130px, 22dvh); bottom: auto; left: 0; right: 0; margin: 0 auto; transform: none;
     width: min(40dvh, 72vw); }
-  .balao { position: fixed; top: 76px; bottom: auto; left: 50%; transform: translateX(-50%); width: max-content;
-    max-width: 86vw; font-size: 15px; }
-  .balao.some { transform: translateX(-50%) scale(.9); }
-  .balao.fala { animation: pula-cel .35s cubic-bezier(.3,1.6,.5,1); }
+  /* balão colado no chapéu (21/10/2026) */
+  .balao { bottom: 82%; width: max-content; max-width: 86vw; font-size: 15px; }
   .base { bottom: 28px; gap: 8px; }
   .misterio { font-size: clamp(22px, 6.4vw, 30px); }
   .misterio span { font-size: 13px; }
@@ -88,9 +86,12 @@ a { color: var(--tinta); }
 @media (max-height: 560px) { .misterio, .aceite { display: none; } .patrao { bottom: 22vh; } }
 @media (prefers-reduced-motion: reduce) { .cena { transition: none; } .balao.fala, .patrao.treme #rosto { animation: none; } }
 
-/* celular, teclado aberto: o balão vai para cima do campo de e-mail (21/10/2026) */
-.balao.no-campo { position: static !important; transform: none !important; width: auto; max-width: 92vw; margin: 0 0 6px;
-  font-size: 15px; }
-.balao.no-campo::after { left: 50%; right: auto; }
-.balao.no-campo.some { opacity: 0; }
-.balao.no-campo.fala { animation: pula .35s cubic-bezier(.3,1.6,.5,1); }
+/* celular com o teclado aberto: só o Patrão, o balão e o campo, na área visível acima do teclado (21/10/2026) */
+body.digitando .marca, body.digitando .misterio, body.digitando .redes, body.digitando .rodape, body.digitando .resposta:empty { display: none; }
+body.digitando .patrao { top: calc(var(--vt, 0px) + var(--vh, 100dvh) * .20); bottom: auto;
+  width: min(calc(var(--vh, 100dvh) * .42), 62vw); }
+body.digitando .base { top: calc(var(--vt, 0px) + var(--vh, 100dvh) - 112px); bottom: auto; gap: 6px; }
+body.digitando .balao { font-size: 14px; padding: 9px 12px; }
+body.digitando .cena::after { background: rgba(30,10,3,.35); }
+body.digitando .aceite { display: flex !important; font-size: 12px; }
+body.digitando .balao { bottom: 84%; }
