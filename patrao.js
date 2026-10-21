@@ -84,7 +84,7 @@
   let px = innerWidth / 2, py = innerHeight / 2, pendente = false;
   addEventListener("pointermove", (e) => {
     px = e.clientX; py = e.clientY;
-    if (cena) cena.style.transform = `translate(${(px / innerWidth - .5) * -18}px, ${(py / innerHeight - .5) * -10}px)`;
+    if (cena && e.pointerType === "mouse") cena.style.transform = `translate(${(px / innerWidth - .5) * -18}px, ${(py / innerHeight - .5) * -10}px)`;
     if (!pendente) { pendente = true; requestAnimationFrame(() => { pendente = false; olharPara(px, py); }); }
     reiniciarParado();
   }, { passive: true });

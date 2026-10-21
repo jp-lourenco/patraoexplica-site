@@ -3,10 +3,11 @@
 @font-face { font-family: "Luckiest Guy"; src: url(fontes/luckiest-guy.ttf) format("truetype"); font-display: swap; }
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; overflow: hidden; }
-body { font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--tinta); background: #f3a46a; }
+body { font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--tinta); background: #2c5a63;
+  overscroll-behavior: none; }
 a { color: var(--tinta); }
 
-.cena { position: fixed; inset: -3%; background: url(img/ilha_larga.webp) center 60% / cover no-repeat;
+.cena { position: fixed; inset: -40px; background: url(img/ilha_larga.webp) center 60% / cover no-repeat;
   transition: transform .6s cubic-bezier(.2,.7,.2,1); will-change: transform; }
 .cena::after { content: ""; position: absolute; inset: 0;
   background: radial-gradient(ellipse at 50% 38%, transparent 35%, rgba(60,18,4,.55) 100%),
@@ -66,9 +67,23 @@ a { color: var(--tinta); }
 .rodape { position: fixed; bottom: 8px; left: 0; right: 0; text-align: center; font-size: 11px; opacity: .65; z-index: 3; }
 
 @media (max-aspect-ratio: 4/5) {
-  .cena { background-image: url(img/ilha_alta.webp); background-position: center 45%; }
-  .patrao { bottom: 41vh; width: min(56vh, 86vw); }
+  .cena { background-image: url(img/ilha_alta.webp); background-position: center 42%; }
   .marca { flex-direction: column; align-items: flex-start; gap: 6px; }
+  /* celular (21/10): o Patrão cabe entre o nome e a frase; o balão fica fixo embaixo do nome, sempre visível */
+  .patrao { top: max(130px, 22dvh); bottom: auto; left: 0; right: 0; margin: 0 auto; transform: none;
+    width: min(40dvh, 72vw); }
+  .balao { position: fixed; top: 76px; bottom: auto; left: 50%; transform: translateX(-50%); width: max-content;
+    max-width: 86vw; font-size: 15px; }
+  .balao.some { transform: translateX(-50%) scale(.9); }
+  .balao.fala { animation: pula-cel .35s cubic-bezier(.3,1.6,.5,1); }
+  .base { bottom: 28px; gap: 8px; }
+  .misterio { font-size: clamp(22px, 6.4vw, 30px); }
+  .misterio span { font-size: 13px; }
 }
+@media (max-aspect-ratio: 4/5) and (max-height: 700px) {
+  .patrao { width: min(31dvh, 58vw); top: max(118px, 19dvh); }
+  .misterio span br { display: none; }
+}
+@keyframes pula-cel { from { transform: translateX(-50%) scale(.6); } to { transform: translateX(-50%) scale(1); } }
 @media (max-height: 560px) { .misterio, .aceite { display: none; } .patrao { bottom: 22vh; } }
 @media (prefers-reduced-motion: reduce) { .cena { transition: none; } .balao.fala, .patrao.treme #rosto { animation: none; } }
