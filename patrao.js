@@ -187,7 +187,10 @@
   if (TOQUE) setInterval(() => { if (!digitando && Date.now() - ultimaFala > 2500) olharPara(Math.random() * innerWidth, innerHeight * (0.3 + Math.random() * 0.6)); }, 2800);
 
   // ---------------------------------------------------------------- formulário → planilha do Google
-  const PLANILHA = "";   // endereço /exec do Apps Script (preenchido depois de publicar o script)
+  // 21/10/2026: Formulário Google do dono ("Lista do curso – Patrão Explica"), vinculado a uma planilha. O Apps
+  // Script ficou de fora: o Google barrou a autorização na conta. O envio vai direto ao formResponse, sem login.
+  const FORM = "https://docs.google.com/forms/d/e/1FAIpQLScw9ktuQZn_4TFGTlZ_AQ7uasMX25RFEYs_M0XmAOs61rZihw/formResponse";
+  const CAMPO_EMAIL = "entry.1431413661", CAMPO_ACEITE = "entry.1735599168", TEXTO_ACEITE = "Aceito receber o aviso";
   const f = document.getElementById("lista"), r = document.getElementById("resposta");
   f.addEventListener("submit", async (ev) => {
     ev.preventDefault();
@@ -196,12 +199,11 @@
     const aceite = document.querySelector('input[name="aceite"]');
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email || "")) { r.textContent = "Isso não é e-mail. Nem isso tu consegue?"; falar("email", true); return; }
     if (!aceite.checked) { r.textContent = "Marca a caixinha. Regra é regra, até pra mim."; return; }
-    if (!PLANILHA) { r.textContent = "(prévia: a planilha ainda não está ligada)"; falar("enviado", true); return; }
     f.querySelector("button").disabled = true;
     r.textContent = "Mandando…";
     try {
-      await fetch(PLANILHA, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ email: d.email, aceite: true, origem: location.hostname }) });
+      const corpo = new URLSearchParams({ [CAMPO_EMAIL]: d.email.trim().toLowerCase(), [CAMPO_ACEITE]: TEXTO_ACEITE });
+      await fetch(FORM, { method: "POST", mode: "no-cors", body: corpo });
       f.reset(); aceite.checked = false;
       r.textContent = "Anotado. Tu vai saber antes dos outros. Infelizmente.";
       falar("enviado", true);
