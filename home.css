@@ -70,7 +70,7 @@ a { color: var(--tinta); }
   .cena { background-image: url(img/ilha_alta.webp); background-position: center 42%; }
   .marca { flex-direction: column; align-items: flex-start; gap: 6px; }
   /* celular (21/10): o Patrão cabe entre o nome e a frase; o balão fica fixo embaixo do nome, sempre visível */
-  .patrao { top: max(130px, 22dvh); bottom: auto; left: 0; right: 0; margin: 0 auto; transform: none;
+  .patrao { top: max(100px, 17dvh); bottom: auto; left: 0; right: 0; margin: 0 auto; transform: none;
     width: min(40dvh, 72vw); }
   /* balão colado no chapéu (21/10/2026) */
   .balao { bottom: 82%; width: max-content; max-width: 86vw; font-size: 15px; }
@@ -79,7 +79,7 @@ a { color: var(--tinta); }
   .misterio span { font-size: 13px; }
 }
 @media (max-aspect-ratio: 4/5) and (max-height: 700px) {
-  .patrao { width: min(31dvh, 58vw); top: max(118px, 19dvh); }
+  .patrao { width: min(31dvh, 58vw); top: max(96px, 14dvh); }
   .misterio span br { display: none; }
 }
 @keyframes pula-cel { from { transform: translateX(-50%) scale(.6); } to { transform: translateX(-50%) scale(1); } }

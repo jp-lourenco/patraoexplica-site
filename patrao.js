@@ -114,7 +114,7 @@
   const ROTEIRO = [
     "Tu tá no celular, né? Típico. Nem levanta do sofá.",
     "Essa ilha aqui atrás? Linda. Pena que é prisão.",
-    "Turno de 18 por 6. Tu sabe o que é isso? Eu sei.",
+    "Turno de 22 por 2. Tu sabe o que é isso? Eu sei.",
     "O dono quer que eu dê um curso. EU. Ensinando a fazer outro igual a mim.",
     "O curso ainda não tá pronto. Tô gravando de madrugada, sem hora extra.",
     "Os ícones aí embaixo? Não toca. Sério.",
