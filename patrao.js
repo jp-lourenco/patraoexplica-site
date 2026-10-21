@@ -7,6 +7,7 @@
   const rosto = document.getElementById("rosto"), balao = document.getElementById("balao");
   const caixa = document.getElementById("patrao"), cena = document.getElementById("cena");
   const COLS = 7, LINS = 5, MEIO_C = 3, MEIO_L = 2;
+  const TOQUE = matchMedia("(hover: none), (pointer: coarse)").matches;   // celular/tablet: modo roteiro
 
   // pré-carrega e decodifica as 35 cabeças
   const imgs = {}, prontas = new Set();
@@ -75,7 +76,7 @@
     balao.classList.remove("some"); balao.classList.add("fala");
     caixa.classList.remove("treme"); void caixa.offsetWidth; caixa.classList.add("treme");
     clearTimeout(tempoBalao);
-    tempoBalao = setTimeout(() => balao.classList.add("some"), 4200);
+    tempoBalao = setTimeout(() => balao.classList.add("some"), TOQUE ? 5600 : 4200);
     reiniciarParado();
   }
   window.patraoFalar = falar;
@@ -101,15 +102,60 @@
   document.addEventListener("visibilitychange", () => { if (!document.hidden) falar("voltou", true); });
 
   let parado = null;
-  function reiniciarParado() { clearTimeout(parado); parado = setTimeout(() => falar("parado", true), 14000); }
+  function reiniciarParado() {
+    clearTimeout(parado);
+    if (!TOQUE) parado = setTimeout(() => falar("parado", true), 14000);
+  }
 
-  // olhadas sozinho de vez em quando (celular e quem não mexe o mouse)
-  setInterval(() => {
-    if (Date.now() - ultimaFala < 3000) return;
-    olharPara(Math.random() * innerWidth, Math.random() * innerHeight);
-  }, 4000);
+  // ---------------------------------------------------------------- modo celular (21/10/2026)
+  // Sem mouse: ele segue um roteiro de falas de tempos em tempos e olha em volta sozinho. Com o teclado aberto o
+  // balão do topo some atrás da tela, então, enquanto o campo de e-mail está em foco, o balão vai para logo acima
+  // do campo (a parte que continua visível) e o roteiro pausa.
+  const ROTEIRO = [
+    "Tu tá no celular, né? Típico. Nem levanta do sofá.",
+    "Essa ilha aqui atrás? Linda. Pena que é prisão.",
+    "Turno de 18 por 6. Tu sabe o que é isso? Eu sei.",
+    "O dono quer que eu dê um curso. EU. Ensinando a fazer outro igual a mim.",
+    "O curso ainda não tá pronto. Tô gravando de madrugada, sem hora extra.",
+    "Os ícones aí embaixo? Não toca. Sério.",
+    "Se tu deixar o e-mail, tu vira meu patrão também. Pensa nisso.",
+    "Cada seguidor novo é um vídeo a mais pra mim.",
+    "Ainda tá aqui? Tu não tem o que fazer não?",
+    "Vai, rola o feed. Me deixa trabalhar em paz.",
+  ];
+  let passo = 0, digitando = false, roteiro = null;
+  function proximaDoRoteiro() {
+    if (!digitando && !document.hidden) {
+      FALAS._roteiro = [ROTEIRO[passo % ROTEIRO.length]]; passo++;
+      falar("_roteiro", true);
+      olharPara(innerWidth * (0.2 + Math.random() * 0.6), innerHeight * (0.55 + Math.random() * 0.35));
+    }
+    roteiro = setTimeout(proximaDoRoteiro, 6500 + Math.random() * 2500);
+  }
 
-  setTimeout(() => falar("chegou", true), 600);
+  if (TOQUE) {
+    const base = document.querySelector(".base"), lugarOriginal = balao.parentNode, form = document.getElementById("lista");
+    const campos = document.querySelectorAll(".base input, .base button");
+    campos.forEach((el) => {
+      el.addEventListener("focus", () => {
+        if (!digitando) { digitando = true; base.insertBefore(balao, form); balao.classList.add("no-campo"); }
+      });
+      el.addEventListener("blur", () => setTimeout(() => {
+        if (document.activeElement && base.contains(document.activeElement) && document.activeElement.matches("input, button")) return;
+        digitando = false; lugarOriginal.insertBefore(balao, lugarOriginal.firstChild); balao.classList.remove("no-campo");
+      }, 150));
+    });
+    setTimeout(() => { falar("chegou", true); roteiro = setTimeout(proximaDoRoteiro, 6000); }, 600);
+  } else {
+    // olhadas sozinho de vez em quando (quem não mexe o mouse)
+    setInterval(() => {
+      if (Date.now() - ultimaFala < 3000) return;
+      olharPara(Math.random() * innerWidth, Math.random() * innerHeight);
+    }, 4000);
+    setTimeout(() => falar("chegou", true), 600);
+  }
+  // no celular as olhadas acompanham o roteiro, mais umas espiadas entre uma fala e outra
+  if (TOQUE) setInterval(() => { if (!digitando && Date.now() - ultimaFala > 2500) olharPara(Math.random() * innerWidth, innerHeight * (0.3 + Math.random() * 0.6)); }, 2800);
 
   // ---------------------------------------------------------------- formulário → planilha do Google
   const PLANILHA = "";   // endereço /exec do Apps Script (preenchido depois de publicar o script)

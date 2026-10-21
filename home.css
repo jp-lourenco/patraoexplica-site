@@ -87,3 +87,10 @@ a { color: var(--tinta); }
 @keyframes pula-cel { from { transform: translateX(-50%) scale(.6); } to { transform: translateX(-50%) scale(1); } }
 @media (max-height: 560px) { .misterio, .aceite { display: none; } .patrao { bottom: 22vh; } }
 @media (prefers-reduced-motion: reduce) { .cena { transition: none; } .balao.fala, .patrao.treme #rosto { animation: none; } }
+
+/* celular, teclado aberto: o balão vai para cima do campo de e-mail (21/10/2026) */
+.balao.no-campo { position: static !important; transform: none !important; width: auto; max-width: 92vw; margin: 0 0 6px;
+  font-size: 15px; }
+.balao.no-campo::after { left: 50%; right: auto; }
+.balao.no-campo.some { opacity: 0; }
+.balao.no-campo.fala { animation: pula .35s cubic-bezier(.3,1.6,.5,1); }
