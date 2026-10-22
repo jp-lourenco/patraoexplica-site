@@ -207,6 +207,7 @@
       f.reset(); aceite.checked = false;
       r.textContent = "Anotado. Tu vai saber antes dos outros. Infelizmente.";
       falar("enviado", true);
+      if (window.goatcounter && goatcounter.count) goatcounter.count({ path: "lead-enviado", event: true });
     } catch (e) {
       r.textContent = "Não foi. Deve ser o dono economizando na internet. Tenta de novo.";
     } finally { f.querySelector("button").disabled = false; }
